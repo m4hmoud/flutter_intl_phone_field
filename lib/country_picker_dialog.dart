@@ -4,7 +4,9 @@ import 'package:flutter_intl_phone_field/countries.dart';
 import 'package:flutter_intl_phone_field/helpers.dart';
 
 class PickerDialogStyle {
-  final TextStyle? textStyle;
+  final TextStyle? searchFieldTextStyle;
+
+  final TextStyle? countryItemTextStyle;
 
   final Color? backgroundColor;
 
@@ -29,7 +31,8 @@ class PickerDialogStyle {
   final double? width;
 
   PickerDialogStyle({
-    this.textStyle,
+    this.searchFieldTextStyle,
+    this.countryItemTextStyle,
     this.backgroundColor,
     this.countryCodeStyle,
     this.countryNameStyle,
@@ -111,7 +114,7 @@ class _CountryPickerDialogState extends State<CountryPickerDialog> {
               padding:
                   widget.style?.searchFieldPadding ?? const EdgeInsets.all(0),
               child: TextField(
-                style: widget.style?.textStyle,
+                style: widget.style?.searchFieldTextStyle,
                 cursorColor: widget.style?.searchFieldCursorColor,
                 decoration: widget.style?.searchFieldInputDecoration ??
                     InputDecoration(
@@ -145,7 +148,8 @@ class _CountryPickerDialogState extends State<CountryPickerDialog> {
                             )
                           : Text(
                               _filteredCountries[index].flag,
-                              style: const TextStyle(fontSize: 18),
+                              style: widget.style?.countryItemTextStyle ??
+                                  const TextStyle(fontSize: 18),
                             ),
                       contentPadding: widget.style?.listTilePadding,
                       title: Text(

@@ -837,6 +837,7 @@ const List<Country> countries = [
   Country(
     name: "Bolivia, Plurinational State of bolivia",
     nameTranslations: {
+      "ckb": "بۆلیڤیا",
       "sk": "Bolívia",
       "se": "Bolivia",
       "pl": "Boliwia",
@@ -1572,6 +1573,7 @@ const List<Country> countries = [
   Country(
     name: "Congo, The Democratic Republic of the Congo",
     nameTranslations: {
+      "ckb": "کۆنگۆ، کۆماری دیموکراتی کۆنگۆ",
       "sk": "Konžská demokratická republika",
       "se": "Kongo-Kinshasa",
       "pl": "Demokratyczna Republika Konga",
@@ -3651,6 +3653,7 @@ const List<Country> countries = [
   Country(
     name: "Korea, Democratic People's Republic of Korea",
     nameTranslations: {
+      "ckb": "کۆریای باکوور",
       "sk": "Severná Kórea",
       "se": "Davvi-Korea",
       "pl": "Korea Północna",
@@ -4514,6 +4517,7 @@ const List<Country> countries = [
   Country(
     name: "Micronesia, Federated States of Micronesia",
     nameTranslations: {
+      "ckb": "میکرۆنێزیا",
       "sk": "Mikronézia",
       "se": "Mikronesia",
       "pl": "Mikronezja",
@@ -6881,6 +6885,7 @@ const List<Country> countries = [
   Country(
     name: "Tanzania, United Republic of Tanzania",
     nameTranslations: {
+      "ckb": "تانزانیا",
       "sk": "Tanzánia",
       "se": "Tanzánia",
       "pl": "Tanzania",
@@ -7520,6 +7525,7 @@ const List<Country> countries = [
   Country(
     name: "Venezuela, Bolivarian Republic of Venezuela",
     nameTranslations: {
+      "ckb": "ڤەنزوێلا",
       "sk": "Venezuela",
       "se": "Venezuela",
       "pl": "Wenezuela",
