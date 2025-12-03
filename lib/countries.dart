@@ -7855,7 +7855,8 @@ class Country {
 
 /// Configuration class for customizing country phone number settings.
 ///
-/// Use this to override the default min/max length for specific countries.
+/// Use this to override the default min/max length for specific countries
+/// and add custom validation rules.
 ///
 /// Example:
 /// ```dart
@@ -7863,6 +7864,12 @@ class Country {
 ///   countryCode: 'IQ', // Iraq
 ///   minLength: 10,
 ///   maxLength: 10,
+///   validator: (number) {
+///     if (number.startsWith('0')) {
+///       return 'Phone number must not start with 0';
+///     }
+///     return null; // valid
+///   },
 /// );
 /// ```
 class CountryConfig {
@@ -7875,10 +7882,15 @@ class CountryConfig {
   /// Override the maximum phone number length for this country
   final int? maxLength;
 
+  /// Custom validator for this country's phone numbers.
+  /// Returns an error message string if invalid, or null if valid.
+  final String? Function(String number)? validator;
+
   const CountryConfig({
     required this.countryCode,
     this.minLength,
     this.maxLength,
+    this.validator,
   });
 }
 
@@ -7888,14 +7900,26 @@ class CountryConfig {
 ///
 /// Example:
 /// ```dart
-/// final customCountries = configureCountries([
-///   CountryConfig(countryCode: 'IQ', minLength: 10, maxLength: 10),
-///   CountryConfig(countryCode: 'US', minLength: 10, maxLength: 10),
-/// ]);
+/// final configs = [
+///   CountryConfig(
+///     countryCode: 'IQ',
+///     minLength: 10,
+///     maxLength: 10,
+///     validator: (number) {
+///       if (number.startsWith('0')) {
+///         return 'Phone number must not start with 0';
+///       }
+///       return null;
+///     },
+///   ),
+/// ];
+///
+/// final customCountries = configureCountries(configs);
 ///
 /// IntlPhoneField(
 ///   countries: customCountries,
-///   // ... other properties
+///   disableLengthCheck: true,
+///   validator: (phone) => validatePhone(phone, configs),
 /// )
 /// ```
 List<Country> configureCountries(List<CountryConfig> configs) {
@@ -7911,4 +7935,76 @@ List<Country> configureCountries(List<CountryConfig> configs) {
     }
     return country;
   }).toList();
+}
+
+/// Validates a phone number using the provided country configurations.
+///
+/// Returns an error message if invalid, or null if valid.
+///
+/// This function checks:
+/// 1. Custom validator for the country (if provided)
+/// 2. Min/max length constraints (if provided)
+///
+/// Parameters:
+/// - [number]: The phone number without country code
+/// - [countryCode]: The 2-letter ISO country code (e.g., 'IQ')
+/// - [configs]: List of country configurations
+/// - [invalidMessage]: Custom error message for invalid numbers
+///
+/// Example:
+/// ```dart
+/// final configs = [
+///   CountryConfig(
+///     countryCode: 'IQ',
+///     minLength: 10,
+///     maxLength: 10,
+///     validator: (number) => number.startsWith('0') ? 'Must not start with 0' : null,
+///   ),
+/// ];
+///
+/// IntlPhoneField(
+///   countries: configureCountries(configs),
+///   disableLengthCheck: true,
+///   validator: (phone) => validatePhoneWithConfig(
+///     number: phone?.number ?? '',
+///     countryCode: phone?.countryISOCode ?? '',
+///     configs: configs,
+///   ),
+/// )
+/// ```
+String? validatePhoneWithConfig({
+  required String number,
+  required String countryCode,
+  required List<CountryConfig> configs,
+  String? invalidMessage,
+}) {
+  if (number.isEmpty) {
+    return invalidMessage ?? 'Please enter a phone number';
+  }
+
+  final config = configs.cast<CountryConfig?>().firstWhere(
+    (c) => c?.countryCode == countryCode,
+    orElse: () => null,
+  );
+
+  // Run custom validator if provided
+  if (config?.validator != null) {
+    final error = config!.validator!(number);
+    if (error != null) return error;
+  }
+
+  // Check length constraints
+  final country = countries.firstWhere(
+    (c) => c.code == countryCode,
+    orElse: () => countries.first,
+  );
+
+  final minLength = config?.minLength ?? country.minLength;
+  final maxLength = config?.maxLength ?? country.maxLength;
+
+  if (number.length < minLength || number.length > maxLength) {
+    return invalidMessage ?? 'Invalid phone number';
+  }
+
+  return null;
 }
