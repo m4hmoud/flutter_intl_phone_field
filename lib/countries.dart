@@ -7828,4 +7828,87 @@ class Country {
     // Fall back to default name
     return name;
   }
+
+  /// Creates a copy of this Country with the given fields replaced.
+  Country copyWith({
+    String? name,
+    Map<String, String>? nameTranslations,
+    String? flag,
+    String? code,
+    String? dialCode,
+    String? regionCode,
+    int? minLength,
+    int? maxLength,
+  }) {
+    return Country(
+      name: name ?? this.name,
+      nameTranslations: nameTranslations ?? this.nameTranslations,
+      flag: flag ?? this.flag,
+      code: code ?? this.code,
+      dialCode: dialCode ?? this.dialCode,
+      regionCode: regionCode ?? this.regionCode,
+      minLength: minLength ?? this.minLength,
+      maxLength: maxLength ?? this.maxLength,
+    );
+  }
+}
+
+/// Configuration class for customizing country phone number settings.
+///
+/// Use this to override the default min/max length for specific countries.
+///
+/// Example:
+/// ```dart
+/// final config = CountryConfig(
+///   countryCode: 'IQ', // Iraq
+///   minLength: 10,
+///   maxLength: 10,
+/// );
+/// ```
+class CountryConfig {
+  /// The 2-letter ISO country code (e.g., 'IQ' for Iraq, 'US' for United States)
+  final String countryCode;
+
+  /// Override the minimum phone number length for this country
+  final int? minLength;
+
+  /// Override the maximum phone number length for this country
+  final int? maxLength;
+
+  const CountryConfig({
+    required this.countryCode,
+    this.minLength,
+    this.maxLength,
+  });
+}
+
+/// Applies country configurations to the default countries list.
+///
+/// Returns a new list of countries with the specified configurations applied.
+///
+/// Example:
+/// ```dart
+/// final customCountries = configureCountries([
+///   CountryConfig(countryCode: 'IQ', minLength: 10, maxLength: 10),
+///   CountryConfig(countryCode: 'US', minLength: 10, maxLength: 10),
+/// ]);
+///
+/// IntlPhoneField(
+///   countries: customCountries,
+///   // ... other properties
+/// )
+/// ```
+List<Country> configureCountries(List<CountryConfig> configs) {
+  final configMap = {for (var c in configs) c.countryCode: c};
+
+  return countries.map((country) {
+    final config = configMap[country.code];
+    if (config != null) {
+      return country.copyWith(
+        minLength: config.minLength,
+        maxLength: config.maxLength,
+      );
+    }
+    return country;
+  }).toList();
 }
